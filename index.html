@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Classifier</title>
+    <script type="module">
+        import { Client, handle_file } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            const classifyBtn = document.getElementById("classifyBtn");
+            const fileInput = document.getElementById("fileInput");
+            const resultDiv = document.getElementById("result");
+
+            classifyBtn.addEventListener("click", async () => {
+                if (!fileInput.files.length) {
+                    alert("Please upload an image first!");
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                resultDiv.innerHTML = "Processing...";
+                classifyBtn.disabled = true;
+                
+                try {
+                    const client = await Client.connect("Sid26Roy/Farmer_prediction"); // Replace with actual space ID
+                    const prediction = await client.predict("/predict", [handle_file(file)]);
+                    resultDiv.innerHTML = "Prediction: " + prediction.data;
+                } catch (error) {
+                    resultDiv.innerHTML = "Error: " + error.message;
+                } finally {
+                    classifyBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h2>Plant Disease Classifier</h2>
+    <input type="file" id="fileInput" accept="image/*">
+    <button id="classifyBtn">Classify</button>
+    <p id="result"></p>
+</body>
+</html>
+
